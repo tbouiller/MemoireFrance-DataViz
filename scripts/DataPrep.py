@@ -35,5 +35,11 @@ clean_df['pd_birth_date'] = pd.to_datetime(clean_df[birth_dates].astype(str).agg
 # Calculate the age at death by subtracting birth date from death date
 clean_df['age_at_death'] = (clean_df['pd_death_date'] - clean_df['pd_birth_date'])
 
+clean_df = clean_df.drop(['c_naissance_jour_mois_annee_yyyy', 'c_naissance_jour_mois_annee_mm',
+       'c_naissance_jour_mois_annee_dd', 'annot_recrutement_matricule', 'annot_deces_jour_mois_annee_yyyy',
+       'annot_deces_jour_mois_annee_mm', 'annot_deces_jour_mois_annee_dd', 'Unnamed: 25',
+       'Unnamed: 26', 'Unnamed: 27', 'Unnamed: 28', 'Unnamed: 29',
+       'nan_counts'], axis=1)
 
-clean_df.to_csv('mdf_df.csv')
+
+clean_df.to_csv('../data/mdf_df.csv')

@@ -10,6 +10,7 @@ from plots import casualties_bar, france_choropleth, density_plot
 from dash.dependencies import Input, Output, State
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
+import dash_bootstrap_components as dbc
 
 
 
@@ -73,38 +74,71 @@ mapbox_plot = density_plot(map_df)
 # Create the Dash application
 app = dash.Dash(__name__)
 
+app_color = {"graph_bg": "#082255", "graph_line": "#007ACE"}
+
 app.layout = html.Div(
-    [
-        
-        dmc.DatePicker(
-        id="date-picker",
-        label="Birthdate",
-        description="Enter your birthday, and odds are that there is someone who died for France at the exact same age as you are today during World War 1",
-        minDate=date(1920, 1, 1),
-        value=None,
-        style={"width": 200},
+    style={"display": "flex", "margin": "1em 5em", "fontSize": 18},
+    children=[
+        html.Div(
+            style={"width": "25%"},
+            children=[
+                dmc.DatePicker(
+                    id="date-picker",
+                    label="Birthdate",
+                    description="Enter your birthday, and odds are that there is someone who died for France at the exact same age as you are today during World War 1",
+                    minDate=date(1920, 1, 1),
+                    value=None,
+                    style={"width": 200},
+                ),
+                html.Div(id="output-age", style={"margin-top": "1em"}),
+            ],
         ),
-        
-        dmc.Space(h=10),
-        dmc.Text(id="output-age"),
-        dmc.Space(h=10),
-
-        dcc.Tabs([
-        dcc.Tab(dcc.Graph(id="casualties-graph",figure=casualties_fig), label="Casualties over time", 
-                style=tab_style, selected_style=tab_selected_style),
-        dcc.Tab(dcc.Graph(id="cumulative-graph", figure=cumulative_fig), label="Casualties cumulated", 
-            style=tab_style, selected_style=tab_selected_style)], style=tabs_styles),
-        
-        dcc.Tabs([
-        dcc.Tab(dcc.Graph(id="choropleth", figure=choropleth_fig), label='Choropleth casualty map', 
-                style=tab_style, selected_style=tab_selected_style),
-        dcc.Tab(dcc.Graph(id="density-mapbox", figure=mapbox_plot), label='Density casualty map', 
-                style=tab_style, selected_style=tab_selected_style)], style=tabs_styles),          
- #       html.H2("Calculate Your Age"),
-  #      html.Div(id="output-age", style={"margin-top": "1em"})      
-
+        html.Div(
+            style={
+                "width": "75%",
+                "margin-left": "2em",
+                "display": "flex",
+                "flex-direction": "column",
+                "align-items": "center",
+            },
+            children=[
+                dcc.Tabs(
+                    [
+                        dcc.Tab(
+                            dcc.Graph(id="casualties-graph", figure=casualties_fig),
+                            label="Casualties over time",
+                            style=tab_style,
+                            selected_style=tab_selected_style,
+                        ),
+                        dcc.Tab(
+                            dcc.Graph(id="cumulative-graph", figure=cumulative_fig),
+                            label="Casualties cumulated",
+                            style=tab_style,
+                            selected_style=tab_selected_style,
+                        ),
+                    ],
+                    style=tabs_styles,
+                ),
+                dcc.Tabs(
+                    [
+                        dcc.Tab(
+                            dcc.Graph(id="choropleth", figure=choropleth_fig),
+                            label="Choropleth casualty map",
+                            style=tab_style,
+                            selected_style=tab_selected_style,
+                        ),
+                        dcc.Tab(
+                            dcc.Graph(id="density-mapbox", figure=mapbox_plot),
+                            label="Density casualty map",
+                            style=tab_style,
+                            selected_style=tab_selected_style,
+                        ),
+                    ],
+                    style=tabs_styles,
+                ),
+            ],
+        ),
     ],
-    style={"margin": "1em 5em", "fontSize": 18}
 )
 
 

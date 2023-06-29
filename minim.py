@@ -15,7 +15,8 @@ import dash_bootstrap_components as dbc
 
 
 tabs_styles = {
-    'height': '44px'
+    'height': '44px',
+    "margin-top": "2em"
 }
 tab_style = {
     'borderBottom': '1px solid #d6d6d6',
@@ -26,8 +27,8 @@ tab_style = {
 tab_selected_style = {
     'borderTop': '1px solid #d6d6d6',
     'borderBottom': '1px solid #d6d6d6',
-    'backgroundColor': '#119DFF',
-    'color': 'white',
+    'backgroundColor': "lightgray",
+    'color': 'black',
     'padding': '6px'
 }
 
@@ -74,87 +75,85 @@ mapbox_plot = density_plot(map_df)
 # Create the Dash application
 app = dash.Dash(__name__)
 
-app_color = {"graph_bg": "#082255", "graph_line": "#007ACE"}
 
 app.layout = html.Div(
-    style={"display": "flex", "margin": "1em 5em", "fontSize": 18},
+    style={"fontSize": 24, "background-color": "lightgray", "fontFamily": "Open Sans, sans-serif", "border-radius": "30px", "margin-top": "-50px"},
     children=[
         html.Div(
-            style={"width": "25%"},
             children=[
-                dmc.DatePicker(
-                    id="date-picker",
-                    label="Birthdate",
-                    description="Enter your birthday, and odds are that there is someone who died for France at the exact same age as you are today during World War 1",
-                    minDate=date(1920, 1, 1),
-                    value=None,
-                    style={"width": 200},
-                ),
-                html.Div(id="output-age", style={"margin-top": "1em"}),
-            ],
+                html.H1("Making sense of French casualties during World War 1", style={"margin": "1em 1em"}),
+                html.P("France was the theater of one of the bloodiest conflicts during World War 1. This webapp aims to convey the extent of the casualties suffered by the french army during the time span of the war", style={"margin": "1em 2em"}),
+            ], style={"backgroundColor": "lightgray"}
         ),
+        html.Div(style={"height": "20px"}),
         html.Div(
-            style={
-                "width": "75%",
-                "margin-left": "2em",
-                "display": "flex",
-                "flex-direction": "column",
-                "align-items": "center",
-            },
+            style={"display": "flex", "backgroundColor": "#F0F0F0", "border-radius": "30px"},
             children=[
-                dcc.Tabs(
-                    [
-                        dcc.Tab(
-                            dcc.Graph(id="casualties-graph", figure=casualties_fig),
-                            label="Casualties over time",
-                            style=tab_style,
-                            selected_style=tab_selected_style,
+                html.Div(
+                    style={"width": "25%", "margin": "1em 2em", "backgroundColor": "#F0F0F0"},
+                    children=[
+                        html.H2("Age matcher"),
+                        html.P("Enter your birthday, and odds are that there is someone who died for France during World War 1, at the exact same age as you are today "),
+                        dmc.DatePicker(
+                            id="date-picker",
+                            minDate=date(1920, 1, 1),
+                            initialLevel='year',
+                            style={"width": 200},
                         ),
-                        dcc.Tab(
-                            dcc.Graph(id="cumulative-graph", figure=cumulative_fig),
-                            label="Casualties cumulated",
-                            style=tab_style,
-                            selected_style=tab_selected_style,
-                        ),
+                        html.Div(id="output-age", style={"margin-top": "1em"}),
                     ],
-                    style=tabs_styles,
                 ),
-                dcc.Tabs(
-                    [
-                        dcc.Tab(
-                            dcc.Graph(id="choropleth", figure=choropleth_fig),
-                            label="Choropleth casualty map",
-                            style=tab_style,
-                            selected_style=tab_selected_style,
+                html.Div(style={"height": "20px", "border-radius": "30px"}),
+                html.Div(
+                    style={
+                        "width": "75%",
+                        "margin-left": "2em",
+                        "display": "flex",
+                        "flex-direction": "column",
+                        "align-items": "center",
+                    },
+                    children=[
+                        dcc.Tabs(
+                            [
+                                dcc.Tab(
+                                    dcc.Graph(id="casualties-graph", figure=casualties_fig),
+                                    label="Casualties over time",
+                                    style=tab_style,
+                                    selected_style=tab_selected_style,
+                                ),
+                                dcc.Tab(
+                                    dcc.Graph(id="cumulative-graph", figure=cumulative_fig),
+                                    label="Casualties cumulated",
+                                    style=tab_style,
+                                    selected_style=tab_selected_style,
+                                ),
+                            ],
+                            style=tabs_styles,
                         ),
-                        dcc.Tab(
-                            dcc.Graph(id="density-mapbox", figure=mapbox_plot),
-                            label="Density casualty map",
-                            style=tab_style,
-                            selected_style=tab_selected_style,
+                        html.Div(style={"height": "20px"}),
+                        dcc.Tabs(
+                            [
+                                dcc.Tab(
+                                    dcc.Graph(id="choropleth", figure=choropleth_fig),
+                                    label="Choropleth casualty map",
+                                    style=tab_style,
+                                    selected_style=tab_selected_style,
+                                ),
+                                dcc.Tab(
+                                    dcc.Graph(id="density-mapbox", figure=mapbox_plot),
+                                    label="Density casualty map",
+                                    style=tab_style,
+                                    selected_style=tab_selected_style,
+                                ),
+                            ],
+                            style=tabs_styles,
                         ),
                     ],
-                    style=tabs_styles,
                 ),
             ],
         ),
     ],
 )
-
-
-"""@app.callback(
-    Output("output-age", "children"),
-    Input("date-picker", "date")
-)
-def get_alter_ego(selected_date):
-    if selected_date is not None:
-        birth_date = datetime.strptime(selected_date, '%Y-%m-%d')
-        current_date = datetime.now().date()
-        days_alive = (current_date - birth_date.date()).days
-        select_alter = df_France.loc[df_France['age_at_death']==pd.to_timedelta(days_alive, unit='days')].sample()
-
-        alter_ego = f'{select_alter.c_prenom.item()} {select_alter.c_nom.item()}, died at  {select_alter.annot_id_deces_lieu_intitule.item()}'
-    return alter_ego"""
 
 @callback(Output("output-age", "children"), Input("date-picker", "value"))
 def get_alter_ego(selected_date):
@@ -163,7 +162,7 @@ def get_alter_ego(selected_date):
         current_date = datetime.now().date()
         days_alive = (current_date - birth_date.date()).days
         select_alter = df_France.loc[df_France['age_at_death']==pd.to_timedelta(days_alive, unit='days')].sample()
-        
+
         relative_time = relativedelta(current_date, birth_date)
         years = relative_time.years
         months = relative_time.months

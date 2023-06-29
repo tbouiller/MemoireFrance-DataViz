@@ -37,7 +37,9 @@ def casualties_bar(dates, counts, title, x_title, y_title, color_scale=[[0, 'rgb
             title=y_title
         ),
         bargap=0.2,
-        width=1000, height=600
+        width=1000, height=600,
+        plot_bgcolor="#F0F0F0",
+        paper_bgcolor="#F0F0F0"
     )
     
     return go.Figure(data=[trace], layout=layout)
@@ -49,7 +51,7 @@ def france_choropleth(df_dep, departements):
                         projection="mercator", color_continuous_scale="Greys"
                        )
     fig.update_geos(fitbounds="locations", visible=False)
-    fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, width=800, height=800)
+    fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, width=1000, height=800)
     
     return fig
 
@@ -57,7 +59,7 @@ def france_choropleth(df_dep, departements):
 
 def density_plot(map_df):
     fig = px.density_mapbox(map_df, lat='latitude', lon='longitude', z='casualties', radius=10,
-                        zoom=0, height=800, width=800)
+                        zoom=0, height=800, width=1000)
 
     fig.update_layout(
         mapbox=dict(
